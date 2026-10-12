@@ -25,7 +25,7 @@ Traditional DJ software crossfades two full stereo files together, which causes 
 ### 1. Dynamic Time-Slicing (CPU & Memory Optimization)
 Loading 4 uncompressed 32-bit float WAV stems for multiple full-length tracks quickly saturates system RAM and creates significant latency when phase-vocoding time-stretches.
 * **The Fix**: The engine computes the exact time-slice required for each transition:
-  $$\text{beats\_needed} = (\text{body\_bars} + \text{transition\_bars}) \times 4$$
+  beats_needed = (body_bars + transition_bars) * 4
 * **Targeted Disk Read**: Audio stems are sliced during file load (`librosa.load(stem_path, sr=None, duration=duration_sec_needed)`), reducing RAM footprint by **over 75%** and ensuring CPU phase-vocoder routines only process what will actually be heard.
 
 ### 2. Multi-Tiered Disk Caching Layer
