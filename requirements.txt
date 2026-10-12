@@ -2,3 +2,5 @@ demucs
 librosa
 numpy
 pydub
+fastapi
+uvicorn

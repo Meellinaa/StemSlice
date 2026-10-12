@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StemSlice - AI DJ Mix Lab</title>
+    <!-- Outfit Font from Google Fonts for a premium modern aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=2">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation Bar -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">|||i|||</span>
+                <h1>STEMSLICE</h1>
+            </div>
+            <div class="user-profile">
+                <span class="username">Melina Fathi</span>
+                <div class="avatar">MF</div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <h2>YOUR LIBRARY</h2>
+                        <span class="track-count" id="track-count">0 tracks</span>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Search track name...">
+                        <button class="filter-btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+                        </button>
+                    </div>
+                    <div class="track-list" id="track-list">
+                        <!-- Loaded dynamically -->
+                        <div class="loading-spinner">Loading tracks...</div>
+                    </div>
+                </div>
+                <!-- TikTok feed removed -->
+            </aside>
+
+            <!-- Main Mix Lab Dashboard -->
+            <section class="mix-lab">
+                <div class="panel-header">
+                    <h2>MIX LAB</h2>
+                </div>
+
+                <!-- Interactive Mix Queue -->
+                <div class="mix-queue-panel">
+                    <span class="queue-label">MIX SEQUENCE (Drag to reorder):</span>
+                    <div class="queue-list" id="mix-queue">
+                        <div class="empty-queue-hint">Click tracks in your library to add them to the mix sequence.</div>
+                    </div>
+                </div>
+
+                <!-- Active Track Details Card -->
+                <div class="active-track-card">
+                    <div class="track-details">
+                        <h3 id="active-track-title">Select tracks to mix</h3>
+                        <div class="track-meta">
+                            <span class="meta-label">BPM:</span>
+                            <span class="meta-value" id="active-track-bpm">--</span>
+                            <span class="meta-label">KEY:</span>
+                            <span class="meta-value" id="active-track-key">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Stems Waveform Display -->
+                    <div class="waveform-container">
+                        <!-- Vocals stem track -->
+                        <div class="waveform-row vocals-row">
+                            <span class="stem-label">VOCALS</span>
+                            <div class="wave-wrapper">
+                                <canvas id="canvas-vocals" class="wave-canvas"></canvas>
+                            </div>
+                        </div>
+                        <!-- Drums stem track -->
+                        <div class="waveform-row drums-row">
+                            <span class="stem-label">DRUMS</span>
+                            <div class="wave-wrapper">
+                                <canvas id="canvas-drums" class="wave-canvas"></canvas>
+                            </div>
+                        </div>
+                        <!-- Bass stem track -->
+                        <div class="waveform-row bass-row">
+                            <span class="stem-label">BASS</span>
+                            <div class="wave-wrapper">
+                                <canvas id="canvas-bass" class="wave-canvas"></canvas>
+                            </div>
+                        </div>
+                        <!-- Other stem track -->
+                        <div class="waveform-row other-row">
+                            <span class="stem-label">OTHER</span>
+                            <div class="wave-wrapper">
+                                <canvas id="canvas-other" class="wave-canvas"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Beat Grid Playhead Line overlay -->
+                        <div class="playhead" id="mix-playhead"></div>
+                    </div>
+                    
+                    <!-- Scrolling Status Output Logs -->
+                    <div class="status-log-console" id="status-log">
+                        <div class="log-entry system">Ready. Select tracks or write an AI prompt below.</div>
+                    </div>
+                </div>
+
+                <!-- Interface Controls Section -->
+                <div class="controls-container">
+                    <div class="rules-panel">
+                        <div class="control-group">
+                            <label>TRANSITION RULES</label>
+                            <select id="transition-preset">
+                                <option value="bass_swap_beatmatch">Viral Drop Sync (Bass Swap)</option>
+                                <option value="vocal_overlay_beatmatch">Vocal Overlay Beatmatch</option>
+                                <option value="melody_crossfade">Melody Crossfade</option>
+                                <option value="fade">Smooth Outro/Intro Fade</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>ENERGY CURVE</label>
+                            <div class="slider-wrapper">
+                                <span class="slider-label">LOW</span>
+                                <input type="range" id="energy-curve" min="1" max="100" value="80">
+                                <span class="slider-label">HIGH</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Prompt input and Central Action Buttons -->
+                    <div class="action-panel">
+                        <div class="prompt-box">
+                            <input type="text" id="prompt-input" placeholder="Ask AI DJ: 'Create a fast transition mix starting with Toma...'">
+                        </div>
+                        <button class="generate-btn" id="generate-mashup-btn">GENERATE MASHUP</button>
+                    </div>
+
+                    <!-- AI Tap Panel -->
+                    <div class="ai-tap-panel">
+                        <button class="ai-tap-btn" id="ai-tap-btn">
+                            <div class="tap-glow-ring"></div>
+                            <span class="tap-icon">👇</span>
+                            <span class="tap-label">AI TAP</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Recommendation and Status Section -->
+                <div class="footer-panels">
+                    <!-- Mix Status compilation card -->
+                    <div class="footer-card status-card">
+                        <h3>MIX STATUS</h3>
+                        <p class="render-mode" id="render-mode">Idle</p>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar-fill" id="progress-bar"></div>
+                        </div>
+                        <p class="output-filename" id="output-filename">Output: AI_DJ_Mix.mp3</p>
+                        <!-- Download mix button when completed -->
+                        <a href="/api/download-mix" class="download-btn hidden" id="download-mix-btn" download>💾 Download Mix MP3</a>
+                    </div>
+
+                    <!-- AI Tap Recommendations list -->
+                    <div class="footer-card recommendations-card">
+                        <h3>AI TAP RECOMMENDATIONS</h3>
+                        <div class="recs-list" id="recommendations-list">
+                            <div class="empty-recs">Click AI TAP to fetch key/tempo matched transitions.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="/static/app.js?v=2"></script>
+</body>
+</html>

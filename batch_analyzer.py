@@ -143,43 +143,46 @@ def main():
         return
         
     mp3_files = []
-    for filename in os.listdir(songs_dir):
-        # Skip hidden files
-        if filename.startswith('.'):
-            continue
-        # Skip output remix files
-        if filename.endswith('_Remix.mp3'):
-            continue
-        if filename.endswith('.mp3'):
-            mp3_files.append(filename)
+    for root, dirs, files in os.walk(songs_dir):
+        # Exclude hidden directories from search
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        for filename in files:
+            if filename.startswith('.'):
+                continue
+            if filename.endswith('_Remix.mp3') or filename.endswith('_Mix.mp3'):
+                continue
+            if filename.endswith('.mp3'):
+                full_path = os.path.join(root, filename)
+                rel_path = os.path.relpath(full_path, songs_dir)
+                mp3_files.append((rel_path, full_path))
             
     print(f"Found {len(mp3_files)} MP3 songs to analyze.")
     
     # Process each song
-    for idx, filename in enumerate(mp3_files, start=1):
-        file_path = os.path.join(songs_dir, filename)
-        rel_key = f"Songs/{filename}"
+    for idx, (rel_path, file_path) in enumerate(mp3_files, start=1):
+        rel_key = f"Songs/{rel_path}"
+        display_name = os.path.basename(file_path)
         
-        print(f"\n--- [{idx}/{len(mp3_files)}] {filename} ---")
+        print(f"\n--- [{idx}/{len(mp3_files)}] {display_name} ---")
         
         # 1. Estimate BPM and Key
         try:
             bpm, estimated_key, camelot = estimate_bpm_and_key(file_path)
             print(f"-> BPM: {bpm} | Key: {estimated_key} (Camelot: {camelot})")
         except Exception as e:
-            print(f"Error analyzing metadata for {filename}: {e}")
+            print(f"Error analyzing metadata for {display_name}: {e}")
             continue
             
         # 2. Run Demucs stem separation
         try:
             stems_dir, stems_paths = run_demucs_if_needed(file_path, output_separated_dir)
         except Exception as e:
-            print(f"Error separating stems for {filename}: {e}")
+            print(f"Error separating stems for {display_name}: {e}")
             stems_dir = ""
             stems_paths = {}
             
         # 3. Store/Update metadata in the library dictionary
-        song_name = os.path.splitext(filename)[0]
+        song_name = os.path.splitext(display_name)[0]
         library[rel_key] = {
             "title": song_name,
             "file_path": file_path,

@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.env
 venv/
 ENV/
 env/
@@ -17,3 +16,13 @@ library.json
 
 # Logs and temporary files
 *.log
+
+# Security & Credentials
+.env*
+*.pem
+*.key
+*.pub
+id_rsa*
+id_ed25519*
+SSH
+Settings
